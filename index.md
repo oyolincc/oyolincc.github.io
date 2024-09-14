@@ -15,9 +15,9 @@ hero:
     #   link: /api-examples
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: 技术笔记
+    details: 主要写一些技术笔记
+  - title: 其他文章
+    details: 主要写一些其他文章
 ---
 
