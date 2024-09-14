@@ -22,7 +22,7 @@ export default {
 
 **Output**
 
-```js{4}
+```js{2-5}
 export default {
   data () {
     return {
