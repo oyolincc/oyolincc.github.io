@@ -26,7 +26,7 @@ export default defineConfig({
       },
       {
         text: '技术笔记',
-        link: '/tech-docs/basics/css-basics',
+        link: '/tech-docs/framework/vue@3.5.5/p1',
         activeMatch: '/tech-docs'
       },
       {
