@@ -7,6 +7,12 @@
   --vp-c-brand-2: #d12c5b;
   /* bg */
   --vp-c-brand-3: #ef3268;
+
+  /* --vp-c-bg: #e3f799;
+  --vp-c-bg-soft: #eaf9b2;
+
+  --vp-c-gutter: #575f3b;
+  --vp-c-divider: #575f3b; */
   /*
   #ef3268
   #d12c5b
@@ -16,4 +22,13 @@
   #5a1327
   #3c0d1a
   #1e060d */
+}
+
+
+.VPImage.image-src {
+  transition: all 1s ease-in-out;
+  cursor: pointer;
+}
+.VPImage.image-src:hover {
+  transform: scale(1.1) translate(-50%, -40%);
 }

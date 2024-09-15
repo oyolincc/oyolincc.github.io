@@ -3,13 +3,16 @@
 layout: home
 
 hero:
-  name: "cc的乐色桶"
+  name: "CC的乐色桶"
+  image:
+    src: /assets/acid-2-alpha.png
+    alt: Damn it
   text: "happy Trash can"
   tagline: 色香味俱全
   actions:
     - theme: brand
       text: 开始学习
-      link: /docs/examples
+      link: /tech-docs/basics/css-basics
     # - theme: alt
     #   text: API Examples
     #   link: /api-examples
