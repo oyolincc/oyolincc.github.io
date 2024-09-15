@@ -1,0 +1,16 @@
+.vitepress/dist
+.vitepress/cache
+deprecated
+
+# local env files
+.env*.local
+.env
+
+# other
+.DS_Store
+*.pem
+node_modules
+temp
+*.log
+.idea
+.eslintcache
