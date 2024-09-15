@@ -12,7 +12,7 @@ hero:
   actions:
     - theme: brand
       text: 开始学习
-      link: /tech-docs/basics/css-basics
+      link: /tech-docs/framework/vue@3.5.5/p1
     # - theme: alt
     #   text: API Examples
     #   link: /api-examples

@@ -1,15 +1,23 @@
 import { defineConfig } from 'vitepress'
+import sidebar from './sidebar.mts'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "朋友们都别卷了！",
+  title: "朋友们都别卷了求求！",
   description: "朋友们都别卷了！",
   head: [['link', { rel: 'icon', href: '/assets/ico-96.png' }]],
   rewrites: {
-    'tech-docs/basics/:name/README.md': 'tech-docs/basics/:name.md',
+    'tech-docs/:dir/:name/README.md': 'tech-docs/:dir/:name.md',
+    // 'tech-docs/:dir/:name/:file.md': 'tech-docs/:dir/:name/:file.md',
+    // 'tech-docs/framework/:name/README.md': 'tech-docs/framework/:name.md',
+    // 'tech-docs/engineering/:name/README.md': 'tech-docs/engineering/:name.md',
   },
   themeConfig: {
     logo: '/assets/ico-96.png',
+    outline: {
+      label: '大纲',
+      level: 'deep',
+    },
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       {
@@ -26,19 +34,7 @@ export default defineConfig({
         link: '/other',
       },
     ],
-
-    sidebar: [
-      {
-        text: '基础知识（老掉牙了）',
-        collapsed: true,
-        items: [
-          { text: 'css小记', link: '/tech-docs/basics/css-basics' },
-          { text: 'http', link: '/tech-docs/basics/http' },
-          { text: 'js正则', link: '/tech-docs/basics/regex' }
-        ]
-      }
-    ],
-
+    sidebar,
     socialLinks: [
       { icon: 'github', link: 'https://github.com/oyolincc' }
     ],
