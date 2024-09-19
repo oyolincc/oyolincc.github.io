@@ -13,7 +13,8 @@ const sidebar: DefaultTheme.Sidebar = [
   {
     text: '框架',
     items: [
-      { text: 'vue@3.5.5源码分析', link: '/tech-docs/framework/vue@3.5.5/p1' },
+      { text: 'vue@3.5.5源码分析（一）', link: '/tech-docs/framework/vue@3.5.5/p1' },
+      { text: 'vue@3.5.5源码分析（二）', link: '/tech-docs/framework/vue@3.5.5/p2' },
     ]
   },
   {
