@@ -2,7 +2,7 @@ import type { DefaultTheme } from 'vitepress'
 
 const sidebar: DefaultTheme.Sidebar = [
   {
-    text: '基础知识（老掉牙了）',
+    text: '基础（老掉牙了不更新了）',
     collapsed: true,
     items: [
       { text: 'css小记', link: '/tech-docs/basics/css-basics' },
@@ -21,7 +21,8 @@ const sidebar: DefaultTheme.Sidebar = [
   {
     text: '工程化与构建',
     items: [
-      { text: 'webpack 4（待更新）', link: '/tech-docs/engineering/webpack@4' },
+      { text: 'webpack 4（已过时）', link: '/tech-docs/engineering/webpack@4' },
+      { text: 'rollup踩坑记录', link: '/tech-docs/engineering/rollup/damn' },
     ]
   }
 ]
