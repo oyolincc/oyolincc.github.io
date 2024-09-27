@@ -1,7 +1,15 @@
 <template>
   <main class="main">
     <div class="vj-container">
-      <video muted class="vj-video" :class="{ 'vj-animation': playVj }" ref="refVideo" src="/assets/media/vj_2_small.mp4" loop></video>
+      <video
+        muted
+        loop
+        ref="refVideo"
+        class="vj-video"
+        :class="{ 'vj-animation': playVj }"
+        poster="/assets/vj_2_small_cover.jpg">
+        <source src="/assets/media/vj_2_small.mp4" type="video/mp4">
+      </video>
     </div>
     <audio
       class="vj-audio"
@@ -24,6 +32,7 @@ const refVideo = ref(null);
 const playVj = ref(false);
 
 const handlePlay = () => {
+  alert('麻烦带上耳机开会哈')
   const video = refVideo.value;
   video.play()
   playVj.value = true;
@@ -44,10 +53,10 @@ const handleStop = () => {
 .vj-video {
   pointer-events: none;
   transition: border-radius 0.5s;
-  max-width: 500px;
+  max-width: 650px;
   margin: 0 auto;
   width: 40vw;
-  min-width: 400px;
+  min-width: 320px;
 }
 
 .vj-animation {
@@ -61,7 +70,7 @@ const handleStop = () => {
 .vj-audio {
   width: 40vw;
   margin: 20px auto;
-  min-width: 400px;
+  min-width: 320px;
 }
 
 @keyframes filter-anime {
