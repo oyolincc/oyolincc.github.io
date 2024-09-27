@@ -24,3 +24,8 @@ features:
     details: 主要写一些其他文章
 ---
 
+<script setup>
+import Main from './components/Main.vue';
+</script>
+
+<Main />

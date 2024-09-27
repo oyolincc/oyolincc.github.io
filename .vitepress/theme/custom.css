@@ -32,3 +32,19 @@
 .VPImage.image-src:hover {
   transform: scale(1.1) translate(-50%, -40%);
 }
+/* 
+body {
+  animation: invert-anime 10s ease-in-out infinite;
+}
+
+@keyframes invert-anime {
+  0% {
+    filter: none;
+  }
+  50% {
+    filter: invert(0.8);
+  }
+  100% {
+    filter: none;
+  }
+} */
