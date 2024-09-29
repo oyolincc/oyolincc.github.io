@@ -1,6 +1,6 @@
-# Webpack原理
+# Webpack原理 4&5
 
-## Webpack 4 运作原理
+## Webpack 4 运作原理（已过时）
 
 ### Tapable事件机制
 
@@ -437,6 +437,320 @@ fs.writeFileSync(
 
 
 
-## Webpack 5 与 Webpack 4 对比
+## Webpack 5
 
-待编辑
+本以为有很大差别，其实大体上跟上面差不多。上面的图已经把流程解释的很清楚了。
+
+整个webpack构建流程就是先创建compiler（编译器），每次编译会创建compilation（编译作业），过程中还可能创建子编译器，然后执行编译。
+
+如果是watch模式，每次改动重新编译就是新的compilation。
+
+`Compiler`和`Compilation`就是俩巨大的Tapable实例。各种钩子调来调去，new Compiler的时候会先把很多内部插件钩子注册上去，其中就包括入口插件。
+
+在`make`触发的时候，开始从入口源头进行抽象语法树转换，形成模块依赖对象，然后再构建依赖图，最后生成总代码。
+
+### 另一版迷你webpack
+
+这个是后来写的另一版迷你webpack供参考，首先目录结构：
+
+![dir-structure](image.png)
+
+```js [mypack/my.config.js]
+const { resolve } = require('path')
+
+module.exports = {
+  entry: resolve(__dirname, './source.js'),
+  output: resolve(__dirname, 'bundle.js')
+}
+```
+
+```js [mypack/sub/dep1.js]
+const { add } = require('./dep2.js')
+
+module.exports = {
+  log: (a, b) => {
+    console.log(add(a, b))
+  }
+}
+```
+
+```js [mypack/sub/dep2.js]
+module.exports = {
+  add: (a, b) => a + b,
+  minus: (a, b) => a - b
+}
+```
+
+然后是入口文件：
+
+```js [mypack/source.js]
+const { log } = require('./sub/dep1.js')
+const { minus } = require('./sub/dep2.js')
+
+log(1, 2)
+console.log('789 - 456 = ', minus(789, 456))
+```
+
+然后是模拟的webpack，执行通过pkg.json的命令执行：
+
+```shell
+node mypack/mypack.js -c mypack/my.config.js
+```
+
+```js [mypack/mypack.js]
+const { parseArgs } = require('node:util')
+const { resolve } = require('node:path')
+const { existsSync } = require('node:fs')
+const { Compiler } = require('./compiler')
+
+const { values } = parseArgs({
+  options: {
+    config: {
+      type: 'string',
+      short: 'c',
+      default: 'webpack.config.js'
+    }
+  },
+  allowPositionals: false
+})
+
+const configPath = resolve(process.cwd(), values.config)
+
+if (!existsSync(configPath)) {
+  console.error(`Config file not found: ${configPath}`)
+  process.exit(1)
+}
+
+function build(config) {
+  // new 编译器
+  const compiler = new Compiler(config)
+  // 编译器执行
+  compiler.run()
+}
+
+build(require(configPath))
+```
+
+compiler.js下有`EntryPlugin`、`Compiler`、`Compilation`。
+
+```js [mypack/compiler.js]
+const { AsyncSeriesHook, AsyncParallelHook } = require('tapable')
+const fs = require('node:fs')
+const { resolve, dirname } = require('node:path')
+const { parse } = require('@babel/parser')
+const { transformFromAst } = require('@babel/core')
+const traverse = require('@babel/traverse').default
+
+/**
+ * 入口插件
+ */
+class EntryPlugin {
+  constructor(opts) {
+    this.entry = opts.entry
+  }
+
+  apply(compiler) {
+    compiler.hooks.make.tapAsync('EntryPlugin', (compilation, callback) => {
+      try {
+        const modules = []
+        const visited = new Set()
+        modules.push(compilation.buildModule(this.entry))
+        visited.add(this.entry)
+        for (const module of modules) {
+          const subDeps = module.dependencies
+          subDeps.length && subDeps.forEach(dep => {
+            if (!visited.has(dep)) {
+              modules.push(compilation.buildModule(dep))
+              visited.add(dep)
+            }
+          })
+        }
+        this.graph = modules
+        callback()
+      } catch (err) {
+        callback(err)
+      }
+    })
+  }
+}
+
+/**
+ * 迷你编译过程
+ */
+class Compilation {
+  constructor() {
+    this.hooks = {
+      buildModule: new AsyncSeriesHook(['module']),
+    }
+    this.graph = []
+    this.nextModuleId = 0
+  }
+
+  buildModule(path) {
+    const content = fs.readFileSync(path, 'utf-8')
+    const ast = parse(content, { sourceType: 'module' })
+    const dependencies = []
+    traverse(ast, {
+      ImportDeclaration({ node }) {
+        dependencies.push(node.source.value)
+      },
+      CallExpression({ node }) {
+        if (node.callee.name === 'require') {
+          dependencies.push(resolve(dirname(path), node.arguments[0].value))
+        }
+      }
+    })
+    const { code } = transformFromAst(ast, null, {
+      presets: ['@babel/preset-env']
+    })
+    return {
+      path,
+      content: code,
+      dependencies,
+      id: this.nextModuleId++,
+    }
+  }
+}
+
+/**
+ * 迷你编译器
+ */
+class Compiler {
+  constructor(config) {
+    const { entry, output } = config
+    this.entry = resolve(process.cwd(), entry)
+    this.output = resolve(process.cwd(), output)
+    // 定义钩子
+    this.hooks = {
+			run: new AsyncSeriesHook(["compiler"]),
+			make: new AsyncParallelHook(["compilation"]),
+    }
+    // 内置插件钩子设定，例如入口插件
+    new EntryPlugin({
+      entry: this.entry,
+    }).apply(this)
+    // ...
+  }
+
+  run() {
+    const compilation = new Compilation()
+    this.hooks.run.callAsync(this, err => {
+      console.log('run end')
+      this.hooks.make.callAsync(compilation, err => {
+        console.log('make end')
+        if (err) {
+          console.log(err)
+        } else {
+          this.bundle()
+        }
+      })
+    })
+  }
+
+  bundle() {
+    // const { graph } = compilation
+    // 累了写不动了，反正更上面那个例子的bundle差不多就行
+  }
+}
+
+module.exports = {
+  Compiler
+}
+```
+
+### 自定义Loader运作例子
+
+![dir-structure-2](image-1.png)
+
+```js [loaders/build.config.js]
+const { resolve } = require('path')
+
+module.exports = {
+  mode: 'development',
+  entry: resolve(__dirname, './index.js'),
+  module: {
+    rules: [
+      {
+        test: /.uuu$/,
+        use: [
+          { loader: 'u3Loader.js' },
+          { loader: 'u3NullLoader.js' },
+          { loader: 'u3WelcomeLoader.js' }
+        ]
+      }
+    ]
+  },
+  resolveLoader: {
+    modules: ['node_modules', __dirname],
+  },
+  output: {
+    clean: true,
+    path: resolve(__dirname, 'dist'),
+    filename: '[name].js'
+  }
+}
+```
+
+```js [loaders/u3Loader.js]
+function u3Loader(content, sourceMap, meta) {
+  const lines = content.split(/\r?\n/)
+  debugger
+  this.callback(null, 'export default console.log(\'uu\')')
+}
+
+u3Loader.pitch = function(remainingRequest, precedingRequest, data) {
+  debugger
+  console.log(data)
+}
+
+module.exports = u3Loader
+```
+
+```js [loaders/u3NullLoader.js]
+function u3NullLoader(content, sourceMap, meta) {
+  const lines = content.split(/\r?\n/)
+  debugger
+  this.callback(null, content)
+}
+
+u3NullLoader.pitch = function(remainingRequest, precedingRequest, data) {
+  debugger
+  console.log(data)
+}
+
+module.exports = u3NullLoader
+```
+
+```js [loaders/u3WelcomeLoader.js] 
+function u3WelcomeLoader(content, sourceMap, meta) {
+  debugger
+  this.callback(null, '> WELCOME U3\n' + content, sourceMap, 666)
+}
+
+u3WelcomeLoader.pitch = function(remainingRequest, precedingRequest, data) {
+  debugger
+  // return `import s from ${JSON.stringify(
+  //   `-!${remainingRequest}`
+  // )}; export default s`
+}
+
+module.exports = u3WelcomeLoader
+```
+
+```js [loaders/index.js]
+// import text from '!./u3Loader!./haha.uuu'
+import text from './haha.uuu'
+
+console.log(text)
+```
+
+![u3Loader](image-2.png)
+
+remainingRequest就是剩下的loader的路径，precedingRequest就是前面的loader的路径。执行顺序：
+
+![loader-pic](image-3.png)
+
+
+### 插件运作例子
+
+上面迷你webpack中，`EntryPlugin`就是插件，插件通过apply注册个钩子就行。

@@ -21,7 +21,7 @@ const sidebar: DefaultTheme.Sidebar = [
   {
     text: '工程化与构建',
     items: [
-      { text: 'webpack 4（已过时）', link: '/tech-docs/engineering/webpack@4' },
+      { text: 'webpack 4 & 5', link: '/tech-docs/engineering/webpack' },
       { text: 'rollup踩坑记录', link: '/tech-docs/engineering/rollup/damn' },
     ]
   }
