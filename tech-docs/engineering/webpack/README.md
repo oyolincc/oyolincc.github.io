@@ -754,3 +754,9 @@ remainingRequest就是剩下的loader的路径，precedingRequest就是前面的
 ### 插件运作例子
 
 上面迷你webpack中，`EntryPlugin`就是插件，插件通过apply注册个钩子就行。
+
+### 实际项目中怎么优化？
+
+1. 配置exclude
+2. 开启缓存，babel缓存啊eslint缓存啊balabalbal
+3. 多线程打包，thread-loader
