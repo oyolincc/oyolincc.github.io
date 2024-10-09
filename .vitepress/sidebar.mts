@@ -7,7 +7,8 @@ const sidebar: DefaultTheme.Sidebar = [
     items: [
       { text: 'css小记', link: '/tech-docs/basics/css-basics' },
       { text: 'http', link: '/tech-docs/basics/http' },
-      { text: 'js正则', link: '/tech-docs/basics/regex' }
+      { text: 'js正则', link: '/tech-docs/basics/regex' },
+      { text: '算法小记', link: '/tech-docs/basics/algorithm' }
     ]
   },
   {
@@ -23,6 +24,7 @@ const sidebar: DefaultTheme.Sidebar = [
     items: [
       { text: 'webpack 4 & 5', link: '/tech-docs/engineering/webpack' },
       { text: 'rollup踩坑记录', link: '/tech-docs/engineering/rollup/damn' },
+      { text: '迷你vite', link: '/tech-docs/engineering/vite/mini-vite' },
     ]
   }
 ]
