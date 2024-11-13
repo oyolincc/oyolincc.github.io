@@ -17,6 +17,7 @@ const sidebar: DefaultTheme.Sidebar = [
       { text: 'vue@2源码分析', link: '/tech-docs/framework/vue@2' },
       { text: 'vue@3.5.5源码分析（一）', link: '/tech-docs/framework/vue@3.5.5/p1' },
       { text: 'vue@3.5.5源码分析（二）', link: '/tech-docs/framework/vue@3.5.5/p2' },
+      { text: 'Nestjs学习小记', link: '/tech-docs/framework/nestjs' },
     ]
   },
   {
