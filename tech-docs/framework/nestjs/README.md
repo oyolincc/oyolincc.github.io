@@ -122,3 +122,6 @@ fetchData(logger, config)
   ![useFactory2](image-3.png)
 
   
+
+
+jwt 调用链路 JwtAuthGuard.canActivate -> 父类.canActivate，如果token解析成功走到jwtStrategy
