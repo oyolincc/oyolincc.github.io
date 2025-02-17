@@ -100,5 +100,35 @@ plop
 @changeset/cli处理monorepo版本发包
 clean-package处理发包前的package.json
 
+### Nginx
 
-nginx反向代理 ^~ /xxx/ ，访问 /xxx 会301重定向到 /xxx/，可以用 ~/xxx(/.*)?
+Nginx匹配优先级：精确匹配 (=) > 前缀匹配（^~）> 正则匹配（~/~*） > 普通匹配 > 根匹配 (/)
+
+nginx反向代理： ^~ /xxx/ ，访问 /xxx 会301重定向到 /xxx/，可以用正则匹配 ~ /xxx(/.*)?
+
+rewrite写法： `rewrite ^/api(/.*) $1 break;`，其中`break`表示重写为`$1`后不再回归匹配，还有个选项是`last`，表示`$1`再重新进入nginx其他location匹配规则。
+
+常见示例：
+
+```conf
+location = /admin {
+    rewrite ^/admin$ /admin/ last;
+}
+location /admin/ {
+    alias E:/IT/Main/rumble/apps/web-admin/dist/;
+    index index.html;
+    try_files $uri $uri/ /admin/index.html;
+}
+```
+
+访问`/admin/abc`时，`alias`表示访问`E:/IT/Main/rumble/apps/web-admin/dist/abc`，`root`表示访问`E:/IT/Main/rumble/apps/web-admin/dist/admin/abc`。
+
+![](./image-4.png)
+
+### Docker
+
+```shell
+docker run -p p1:p2 -d image_name
+```
+
+`p1`是暴露端口，`p2`是容器内端口。
